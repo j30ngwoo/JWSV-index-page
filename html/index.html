@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>JW 홈서버 인덱스</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f4f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #333;
+      font-size: 2.2rem;
+    }
+
+    header p {
+      color: #666;
+    }
+
+    main {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: #eef4ff;
+    }
+
+    .card a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    footer {
+      margin-top: 3rem;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📦 JW의 홈서버</h1>
+    </header>
+    <main>
+      <div class="card">
+        <a href="http://jwsv.ddns.net:9000/swagger-ui/index.html" target="_blank"> WhenWhen API Document (Spring)</a>
+      </div>
+      <div class="card">
+        <a href="http://jwsv.ddns.net:9001" target="_blank">📊 학생정보 CSV 변환기</a>
+      </div>
+      <div class="card">
+        <a href="http://jwsv.ddns.net:9003" target="_blank">근무 일정 생성기</a>
+      </div>
+    </main>
+    <footer>
+      <p>&copy; 2025 JW Home Server</p>
+    </footer>
+  </div>
+</body>
+</html>
