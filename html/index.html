@@ -57,6 +57,17 @@
       letter-spacing: 0.01em;
     }
 
+    .link-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .link-row .card {
+      flex: 1;
+      text-align: center;
+    }
+
     footer {
       margin-top: 3rem;
       color: #aaa;
@@ -70,6 +81,18 @@
       <h1>📦 JW의 홈서버</h1>
     </header>
     <main>
+      <div class="link-row">
+        <a class="card" href="https://j30ngwoo.site/portfolio" target="_blank">
+          🗂 포트폴리오
+        </a>
+        <a class="card" href="https://github.com/j30ngwoo" target="_blank">
+          💻 Github
+        </a>
+        <a class="card" href="https://j30ngwoo.tistory.com/" target="_blank">
+          ✍️ Tistory
+        </a>
+      </div>
+
       <div class="section-title">Whenwhen</div>
       <a class="card" href="http://whenwhen-api.j30ngwoo.site/swagger-ui/index.html" target="_blank">
         📢 API Document
