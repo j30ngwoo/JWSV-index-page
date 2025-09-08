@@ -1,0 +1,61 @@
+name: Daily Downloads CSV
+
+on:
+  schedule:
+    # KST 00:05 = UTC 15:05 (KST는 UTC+9)
+    - cron: '5 15 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # CSV 커밋을 위해 필요
+
+jobs:
+  build-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Compute daily totals from GitHub Releases
+        env:
+          OWNER: j30ngwoo
+          REPO: Server-timer
+        run: |
+          mkdir -p html/server-timer/stats
+          FILE=html/server-timer/stats/downloads.csv
+
+          # 헤더 생성(최초 1회)
+          [ -f "$FILE" ] || echo 'date,total,windows,macos,delta_total' > "$FILE"
+
+          # GitHub Releases 조회(최대 100 릴리즈, 필요시 페이지 늘려도 됨)
+          JSON=$(curl -s -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$OWNER/$REPO/releases?per_page=100")
+
+          # 전체/OS별 누적 합계 계산
+          TOTAL=$(echo "$JSON" | jq '[.[] | (.assets // []) | map(.download_count // 0) | add] | add // 0')
+          WIN=$(echo "$JSON"   | jq '[.[] | (.assets // []) | map(select((.name // "") | test("(?i)(-windows\\.exe|\\.exe$)")))  | map(.download_count // 0) | add] | add // 0')
+          MAC=$(echo "$JSON"   | jq '[.[] | (.assets // []) | map(select((.name // "") | test("(?i)(-macos\\.zip|macos)")))       | map(.download_count // 0) | add] | add // 0')
+
+          # 오늘 날짜(KST)
+          TODAY=$(TZ=Asia/Seoul date +%F)
+
+          # 직전 합계(total) 읽어서 오늘 delta 계산
+          PREV=$(tail -n +2 "$FILE" | tail -n 1 | awk -F, '{print $2}')
+          [ -z "$PREV" ] && PREV=0
+          DELTA=$(( TOTAL - PREV ))
+
+          # 오늘 행이 이미 있으면 교체, 없으면 추가
+          TMP=$(mktemp)
+          awk -F, -v d="$TODAY" 'BEGIN{OFS=","} NR==1{print;next} $1!=d{print}' "$FILE" > "$TMP" || true
+          echo "$TODAY,$TOTAL,$WIN,$MAC,$DELTA" >> "$TMP"
+          mv "$TMP" "$FILE"
+
+      - name: Commit and push CSV
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add html/server-timer/stats/downloads.csv
+          git commit -m "chore(stats): update downloads.csv" || echo "no changes"
+          git push

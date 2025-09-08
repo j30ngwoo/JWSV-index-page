@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>서버 타이머 — Server Timer</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  /* ===== Notion-like minimal theme ===== */
+  :root{
+    --fg:#2f3437; --sub:#6b7280; --line:#e5e7eb; --bg:#ffffff; --pill:#f3f4f6; --btn:#1f6feb; --btnh:#195bcc;
+    --code:#111827; --codebg:#f6f8fa;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif}
+  .page{max-width:900px;margin:0 auto;padding:28px 18px 72px}
+  header{margin:8px 0 18px}
+  header h1{margin:.4rem 0 .3rem;font-size:clamp(1.4rem,3.2vw,2rem);font-weight:800;letter-spacing:.1px}
+  header p{margin:0;color:var(--sub)}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+
+  /* download panel */
+  .panel{border:1px solid var(--line);border-radius:var(--radius);padding:14px 14px 12px;background:#fff}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem}
+  .spacer{flex:1}
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.6rem .9rem;border-radius:8px;text-decoration:none;color:#fff;
+    background:var(--btn);font-weight:700
+  }
+  .btn:hover{background:var(--btnh)}
+  .btn.disabled{opacity:.55;pointer-events:none}
+  .pill{display:inline-flex;align-items:center;gap:.45rem;padding:.2rem .6rem;border-radius:999px;background:var(--pill);color:var(--sub);font-size:.9rem}
+  .meta{color:var(--sub);font-size:.95rem}
+  .meta b{color:#111827}
+
+  /* document body */
+  h2{margin:28px 0 8px;font-size:1.15rem;border-bottom:1px solid var(--line);padding-bottom:6px}
+  p{margin:.5rem 0}
+  ul,ol{margin:.4rem 0 0 1.25rem}
+  li{margin:.2rem 0}
+  code{background:var(--codebg);color:var(--code);padding:.1rem .35rem;border-radius:6px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;font-size:.95em}
+  .callout{display:flex;gap:.6rem;align-items:flex-start;background:#fafafa;border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin:.4rem 0}
+  .callout .icon{font-size:1.1rem;line-height:1}
+  .img{margin-top:.6rem;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .img img{display:block;width:100%}
+
+  footer{margin-top:30px;color:var(--sub);font-size:.9rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>⏱️ Server Timer</h1>
+    <p>네이비즘보다 정확한 서버-로컬 오차 보정 타이머</p>
+  </header>
+
+  <!-- 다운로드 패널 (GitHub Releases 연동) -->
+  <section class="panel">
+    <div class="row">
+      <a id="btn-mac" class="btn disabled" href="#" download>macOS 다운로드</a>
+      <a id="btn-win" class="btn disabled" href="#" download>Windows 다운로드</a>
+      <span class="spacer"></span>
+      <span id="rel-tag" class="pill">태그: —</span>
+      <span id="rel-date" class="pill">업데이트: —</span>
+    </div>
+    <div class="row" style="margin-top:.5rem">
+      <div id="file-meta" class="meta">파일 정보 준비 중…</div>
+      <span class="spacer"></span>
+      <div id="cnt-total" class="meta"><b>누적 다운로드: —</b></div>
+    </div>
+    <div class="row" style="margin-top:.35rem">
+      <a class="meta" href="https://github.com/j30ngwoo/Server-timer" target="_blank">📖 소스 코드 (GitHub)</a>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ▼▼▼ README 원문을 최대한 유지 ▼▼▼ -->
+
+  <h2>▶소개</h2>
+  <ul>
+    <li>이 프로그램은 서버에 여러 번의 요청을 통해 오차를 측정하여 <code>ms 단위</code>까지 표시하는 타이머입니다.</li>
+    <li>서버 시간을 측정할 때, 서버에서는 <code>초 단위</code>까지 응답합니다. 따라서 네이버 시계, 네이비즘 등 기존 서비스는 1초 이상의 오차가 발생할 수 있습니다.</li>
+    <li>서버 시간과의 오차가 적용되어 있는 타이머이므로, 타이머 시간 기준 정각 이전(59분 59초)에 예측하여 클릭하는 것이 아니라 <b><i>정각(00분 00초)</i></b> 에 <code>&lt;수강신청·예약&gt; 버튼</code>을 눌러야 합니다.</li>
+    <li>네트워크 상태가 원활하여야 하므로 무선 네트워크(wifi) 대신 유선 네트워크(LAN선) 환경을 권장합니다.</li>
+    <li>소스 코드와 릴리즈가 공개된 안전한 프로그램입니다.</li>
+  </ul>
+
+  <h2>🔥사용 방법</h2>
+  <ol>
+    <li>OS에 맞는 파일 다운로드 및 실행</li>
+    <li>URL 선택 혹은 직접 입력 (직접 입력 시 <code>URL 직접 입력</code> 버튼 클릭)</li>
+    <li>동기화 시작 버튼 클릭</li>
+  </ol>
+  <ul>
+    <li>exe파일이 실행되지 않는 경우:
+    <code>추가 정보</code> -&gt; <code>실행</code>
+    </li>
+  </ul>
+  
+
+  <h2>🚫주의사항</h2>
+  <ul>
+    <li>서버에 여러 번의 요청을 보내 오차를 측정하므로 짧은 시간 내에 너무 많은 동기화 시도 시에 주의하세요. <b>모든 요청은 사용자의 컴퓨터에서 서버로 전송됩니다. 과도한 트래픽 발생으로 문제가 생길 수 있습니다.</b></li>
+    <li>서버 응답 로직에 따라 시간을 측정할 수 없는 사이트도 있습니다.</li>
+  </ul>
+
+  <h2>✅테스트 버튼</h2>
+  <ul>
+    <li> 현재 서버 시간을 확인하여 연습할 수 있도록 하단에 <code>현재 서버 시간 테스트 버튼</code>을 추가하였습니다.</li>
+    <li> <code>동기화 타이머</code>가 59초에서 00초로 넘어갈 때 클릭하여 감각을 연습해 보세요. 넘어가자마자 클릭하되, 59초가 아닌 <b>00초</b>가 표시되어야 성공입니다.</li>
+    <li> <b>클릭 시마다 서버로 요청이 전송되므로, 너무 많이 누르지 마세요.</b> </li>
+  </ul>
+
+  <h2>설정값 설명 (참고용)</h2>
+  <ul>
+    <li><b>동기화당 요청 횟수</b>: 오차를 측정할 때 전송할 요청의 횟수입니다. 20 이상을 권장하며, 너무 적을 시 검증에 실패할 수 있습니다. (기본값 25회)</li>
+    <li><b>요청 간 최소/최대 딜레이</b>: 여러 번의 요청을 전송할 때 적용할 요청 간의 딜레이입니다. 수정할 필요 없습니다.</li>
+    <li><b>검증</b>: 동기화 이후, 오차를 가정하여 검증합니다. 오차를 벗어날 시 동기화 실패로 간주합니다. 검증 횟수가 증가하면 정확도가 증가하지만, 검증에 실패할 가능성도 높아집니다. (기본값 1회)</li>
+    <li><b>검증할 최대 오차</b>: 서버나 네트워크 상태가 불안정하여 너무 많이 실패할 경우 최대 오차값을 높이세요. (기본값 0.1s)<br>
+      - ex) 최대 오차를 0.1s로 설정한다면 -&gt; 0.900초에 요청 시 0초, 1.000초에 요청 시 1초에 도달함을 검증합니다.
+    </li>
+  </ul>
+
+  <!-- ▲▲▲ README 원문 유지 끝 ▲▲▲ -->
+
+  <footer>© 2025 JW Server Timer</footer>
+</div>
+
+<script>
+/* ===== GitHub Releases: 최신 자산 링크 + 모든 릴리즈 누적 다운로드 합 ===== */
+(async () => {
+  const OWNER = "j30ngwoo";
+  const REPO  = "Server-timer";
+  const EP_LATEST = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
+  const EP_LIST   = `https://api.github.com/repos/${OWNER}/${REPO}/releases?per_page=100`;
+
+  const $ = s => document.querySelector(s);
+  const btnWin = $("#btn-win"), btnMac = $("#btn-mac");
+  const relTag = $("#rel-tag"), relDate = $("#rel-date");
+  const fileMeta = $("#file-meta"), cntTotal = $("#cnt-total");
+
+  const setBtn = (el, url) => {
+    if (!el) return;
+    if (url){ el.href=url; el.classList.remove("disabled"); }
+    else    { el.href="#"; el.classList.add("disabled"); }
+  };
+  const setText = (el, t) => { if (el) el.textContent = t; };
+
+  const now = Date.now();
+  const cacheGet = (k,ms) => {
+    try{ const raw = localStorage.getItem(k); if(!raw) return null;
+      const {ts,data} = JSON.parse(raw); return (now - ts <= ms) ? data : null;
+    }catch{ return null; }
+  };
+  const cacheSet = (k,data) => localStorage.setItem(k, JSON.stringify({ts:now,data}));
+
+  try {
+    // 최신 릴리즈 (버튼/태그/파일명·크기)
+    let latest = cacheGet("st_latest", 5*60*1000);
+    if (!latest) {
+      const r = await fetch(EP_LATEST, {headers:{Accept:"application/vnd.github+json"}, cache:"no-store"});
+      if (!r.ok) throw new Error("latest "+r.status);
+      latest = await r.json(); cacheSet("st_latest", latest);
+    }
+    const assets = Array.isArray(latest.assets) ? latest.assets : [];
+    const lc = s => (s||"").toLowerCase();
+    const win = assets.find(a => lc(a.name).endsWith("-windows.exe") || lc(a.name).endsWith(".exe"));
+    const mac = assets.find(a => lc(a.name).endsWith("-macos.zip")   || lc(a.name).includes("macos"));
+    setBtn(btnWin, win && win.browser_download_url);
+    setBtn(btnMac, mac && mac.browser_download_url);
+
+    setText(relTag, `태그: ${latest.tag_name || "—"}`);
+    if (latest.published_at) {
+      const d = new Date(latest.published_at);
+      setText(relDate, `업데이트: ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`);
+    }
+    const parts = [];
+    if (win) parts.push(`Windows: ${win.name} (${Math.round((win.size||0)/1e6)} MB)`);
+    if (mac) parts.push(`macOS: ${mac.name} (${Math.round((mac.size||0)/1e6)} MB)`);
+    setText(fileMeta, parts.length ? parts.join("  |  ") : "릴리즈 자산을 찾지 못했습니다.");
+
+    // 모든 릴리즈 누적 다운로드 합
+    let list = cacheGet("st_list", 5*60*1000);
+    if (!list) {
+      const r2 = await fetch(EP_LIST, {headers:{Accept:"application/vnd.github+json"}, cache:"no-store"});
+      if (!r2.ok) throw new Error("list "+r2.status);
+      list = await r2.json(); cacheSet("st_list", list);
+    }
+    const total = (Array.isArray(list) ? list : []).reduce((sum, rel) => {
+      const n = Array.isArray(rel.assets) ? rel.assets.reduce((s,a)=> s + (a.download_count||0), 0) : 0;
+      return sum + n;
+    }, 0);
+    setText(cntTotal, `누적 다운로드: ${total.toLocaleString()}회`);
+  } catch (e) {
+    console.warn(e);
+    setBtn(btnWin, null); setBtn(btnMac, null);
+    setText(fileMeta, "릴리즈 정보를 불러오지 못했습니다.");
+    setText(cntTotal, "누적 다운로드: 0회");
+  }
+})();
+</script>
+</body>
+</html>

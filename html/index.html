@@ -73,8 +73,94 @@
       color: #aaa;
       font-size: 0.9rem;
     }
+    /* --- Server Timer panel --- */
+    #server-timer-panel.card { text-align: left; }
+    .st-row { display:flex; align-items:center; gap:.75rem; margin:.5rem 0; }
+    .st-left { display:flex; gap:.5rem; }
+    .st-btn {
+      display:inline-block; padding:.55rem .9rem; border-radius:8px;
+      background:#1f6feb; color:#fff; text-decoration:none; font-weight:600;
+    }
+    .st-btn:hover { filter:brightness(1.05); }
+    .st-count { margin-left:auto; color:#667085; font-size:.9rem; white-space:nowrap; }
+    .st-link { display:inline-block; margin-top:.6rem; color:#1f6feb; text-decoration:none; }
+    .st-link:hover { text-decoration:underline; }
   </style>
 </head>
+
+<script>
+(async () => {
+  const OWNER = "j30ngwoo";
+  const REPO  = "Server-timer";
+  const TAG   = null; // null (최신 릴리즈 사용)
+
+  const endpoint = TAG
+    ? `https://api.github.com/repos/${OWNER}/${REPO}/releases/tags/${encodeURIComponent(TAG)}`
+    : `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
+
+  const CACHE_KEY = `gh_release_${OWNER}_${REPO}_${TAG||"latest"}`;
+  const now = Date.now();
+
+  function setBtn(id, url) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (url) {
+      el.href = url;
+      el.classList.remove('disabled');
+      el.style.opacity = '1';
+      el.style.pointerEvents = 'auto';
+    } else {
+      el.href = '#';
+      el.classList.add('disabled');
+      el.style.opacity = '.6';
+      el.style.pointerEvents = 'none';
+    }
+  }
+
+  function setTotalCount(n) {
+    const el = document.getElementById('cnt-total');
+    if (el) el.textContent = `다운로드: ${Number(n||0).toLocaleString()}회`;
+  }
+
+  // 5분 캐시로 GitHub API 레이트 리밋 여유 확보
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { ts, data } = JSON.parse(cached);
+      if (now - ts < 5*60*1000) { apply(data); return; }
+    }
+
+    const res = await fetch(endpoint, {
+      headers: { "Accept": "application/vnd.github+json" },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+    const rel = await res.json();
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: now, data: rel }));
+    apply(rel);
+  } catch (e) {
+    console.warn(e);
+    setBtn('btn-mac', null);
+    setBtn('btn-win', null);
+    setTotalCount(0);
+  }
+
+  function apply(rel) {
+    const assets = Array.isArray(rel.assets) ? rel.assets : [];
+    // 파일명 규칙: -windows.exe / -macos.zip 
+    const win = assets.find(a => a.name.toLowerCase().endsWith('-windows.exe') || a.name.toLowerCase().endsWith('.exe'));
+    const mac = assets.find(a => a.name.toLowerCase().endsWith('-macos.zip')   || a.name.toLowerCase().includes('macos'));
+
+    setBtn('btn-win', win && win.browser_download_url);
+    setBtn('btn-mac', mac && mac.browser_download_url);
+
+    const total = assets.reduce((s,a)=> s + (a.download_count||0), 0);
+    setTotalCount(total);
+  }
+})();
+</script>
+
+
 <body>
   <div class="container">
     <header>
@@ -93,15 +179,11 @@
         </a>
       </div>
 
-      <div class="section-title">Whenwhen</div>
-      <a class="card" href="http://whenwhen-api.j30ngwoo.site/swagger-ui/index.html" target="_blank">
-        📢 API Document
+      <div class="section-title">서버 타이머</div>
+      <a class="card" href="https://j30ngwoo.site/server-timer/" target="_blank">
+        ⏱️ 네이비즘보다 정확한 서버 타이머
       </a>
-
-      <div class="section-title">CSV 변환 Tool</div>
-      <a class="card" href="http://info-csv.j30ngwoo.site/" target="_blank">
-        🔨 학생정보 CSV 변환 Tool
-      </a>
+      
 
       <div class="section-title">상근 근무 시간표 제작 Tool</div>
       <a class="card" href="https://scheduler.j30ngwoo.site/" target="_blank">
@@ -111,10 +193,11 @@
         📢 Api Document
       </a>
 
-      <div class="section-title">서버 타이머</div>
-      <a class="card" href="https://github.com/j30ngwoo/Server-timer/" target="_blank">
-        ⏰ (네이비즘보다 정확한) 서버 타이머
+      <div class="section-title">CSV 변환 Tool</div>
+      <a class="card" href="http://info-csv.j30ngwoo.site/" target="_blank">
+        🔨 학생정보 CSV 변환 Tool
       </a>
+
     </main>
     <footer>
       <p>&copy; 2025 JW Home Server</p>
