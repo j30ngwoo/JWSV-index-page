@@ -5,15 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>서버 타이머 — Server Timer</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
 <style>
   /* ===== Notion-like minimal theme ===== */
   :root{
     --fg:#2f3437; --sub:#6b7280; --line:#e5e7eb; --bg:#ffffff; --pill:#f3f4f6; --btn:#1f6feb; --btnh:#195bcc;
-    --code:#111827; --codebg:#f6f8fa;
+    --code:#111827; --codebg:#e5e5e5;
     --radius:10px;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif}
+  html,body{
+    margin:0;padding:0;
+    background:var(--bg);color:var(--fg);
+    font:16px/1.65 'Noto Sans KR', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  }  
   .page{max-width:900px;margin:0 auto;padding:28px 18px 72px}
   header{margin:8px 0 18px}
   header h1{margin:.4rem 0 .3rem;font-size:clamp(1.4rem,3.2vw,2rem);font-weight:800;letter-spacing:.1px}
@@ -75,9 +81,7 @@
     </div>
   </section>
 
-  <hr/>
-
-  <!-- ▼▼▼ README 원문을 최대한 유지 ▼▼▼ -->
+  개인 프로그램
 
   <h2>▶소개</h2>
   <ul>
@@ -124,13 +128,10 @@
     </li>
   </ul>
 
-  <!-- ▲▲▲ README 원문 유지 끝 ▲▲▲ -->
-
   <footer>© 2025 JW Server Timer</footer>
 </div>
 
 <script>
-/* ===== GitHub Releases: 최신 자산 링크 + 모든 릴리즈 누적 다운로드 합 ===== */
 (async () => {
   const OWNER = "j30ngwoo";
   const REPO  = "Server-timer";
@@ -158,7 +159,6 @@
   const cacheSet = (k,data) => localStorage.setItem(k, JSON.stringify({ts:now,data}));
 
   try {
-    // 최신 릴리즈 (버튼/태그/파일명·크기)
     let latest = cacheGet("st_latest", 5*60*1000);
     if (!latest) {
       const r = await fetch(EP_LATEST, {headers:{Accept:"application/vnd.github+json"}, cache:"no-store"});
