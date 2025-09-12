@@ -52,6 +52,24 @@
   .img{margin-top:.6rem;border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .img img{display:block;width:100%}
 
+  /* code block */
+  pre {
+    background: var(--codebg);
+    color: var(--code);
+    padding: 1rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: .95em;
+    line-height: 1.5;
+    margin: .7rem 0;
+  }
+  pre code {
+    background: none; /* inline code 배경 제거 */
+    padding: 0;
+    color: inherit;
+  }
+
   footer{margin-top:30px;color:var(--sub);font-size:.9rem;text-align:center}
 </style>
 </head>
@@ -79,11 +97,31 @@
     <div class="row" style="margin-top:.35rem">
       <a class="meta" href="https://github.com/j30ngwoo/Server-timer" target="_blank">📖 소스 코드 (GitHub)</a>
     </div>
+    <div class="row" style="margin-top:.35rem">
+      <a class="meta" href="https://github.com/j30ngwoo/Server-timer/actions/workflows/release-build.yml" target="_blank">🔨 빌드와 릴리즈 정보를 여기서 보실 수 있습니다.</a>
+    </div>
   </section>
 
-  개인 프로그램
+  <h2>개인이 만든 프로그램으로, 처음 실행 시 보안 경고창이 뜰 수 있습니다.<br> 다운로드되는 파일은 악성 코드가 아닌 안전한 실행 파일입니다. </h2>
+  <ul>
+    <li>
+      <b>Windows:</b> 추가 정보 > 실행
+    </li>
+    <li>
+      <b>Mac:</b> Apple 메뉴 > 시스템 설정 > 개인정보 보호 및 보안 > 보안 > 열기 > 그래도 열기
+    </li>
+    <li>
+      <b>파이썬 소스 코드를 직접 실행할 수도 있습니다.</b> (Mac은 이 방법을 추천합니다)
+  <pre><code># python과 git이 설치되어 있어야 합니다.
 
-  <h2>▶소개</h2>
+git clone https://github.com/j30ngwoo/Server-timer.git
+pip install -r requirements.txt   # 필요한 모듈 설치
+python src/main.py</code></pre>
+    </li>
+  </ul>
+
+
+  <h2>🎈소개</h2>
   <ul>
     <li>이 프로그램은 서버에 여러 번의 요청을 통해 오차를 측정하여 <code>ms 단위</code>까지 표시하는 타이머입니다.</li>
     <li>서버 시간을 측정할 때, 서버에서는 <code>초 단위</code>까지 응답합니다. 따라서 네이버 시계, 네이비즘 등 기존 서비스는 1초 이상의 오차가 발생할 수 있습니다.</li>
@@ -98,12 +136,6 @@
     <li>URL 선택 혹은 직접 입력 (직접 입력 시 <code>URL 직접 입력</code> 버튼 클릭)</li>
     <li>동기화 시작 버튼 클릭</li>
   </ol>
-  <ul>
-    <li>exe파일이 실행되지 않는 경우:
-    <code>추가 정보</code> -&gt; <code>실행</code>
-    </li>
-  </ul>
-  
 
   <h2>🚫주의사항</h2>
   <ul>
